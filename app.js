@@ -29,6 +29,16 @@ app.post("/api/students", (req, res) => {
   });
 });
 
+app.get('/api/students/:id',(req,res)=>{
+   const id = parseInt(req.params.id);
+   db.getDbStudents()
+   .then(students =>{
+      const student = students.find(s => s.id ===id)
+      if(!student) res.status(404).send('No student found with this id')
+      else res.send(student);
+   })
+})
+
 const PORT = 3000;
 app.listen(PORT, () => {
   console.log("Server is running...");

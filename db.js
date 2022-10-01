@@ -18,5 +18,6 @@ const insertDbStudent = students =>{
     })
 }
 
-module.exports.getDbStudent = getDbStudents;
-module.exports.insertDbStudents = insertDbStudents;
+
+module.exports.getDbStudents = getDbStudents;
+module.exports.insertDbStudent = insertDbStudent;
