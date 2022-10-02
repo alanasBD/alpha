@@ -12,6 +12,7 @@ const studentList = (req, res) => {
   
   const newStudent = (req, res) => {
     const student = req.body;
+    console.log(student);
     db.getDbStudents().then((students) => {
       students.push(student);
       db.insertDbStudent(students).then((data) => {
