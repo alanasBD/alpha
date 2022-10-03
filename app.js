@@ -1,14 +1,16 @@
 const express = require("express");
 const app = express();
 const studentRouter = require('./routers/studentRouter');
-const morgan = require('morgan');
+const mongoose = require('mongoose');
 
-//buildin middleware
+
+mongoose.connect('mongodb://localhost:27017/my-students')
+.then(()=>{
+  console.log('Connected to mongodb');
+})
+.catch(err=>console.log(err))
+
 app.use(express.json());
-app.use(express.urlencoded({extended:true}))
-app.use(express.static('public'))
-//third party middleware
-app.use(morgan('tiny'));
 
 
 

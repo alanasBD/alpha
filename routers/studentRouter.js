@@ -1,65 +1,64 @@
 const express = require('express');
 const router = express.Router();
 
-const db = require("../db.js");
+const {Student} = require('../models/students');
 
 //using named function
-const studentList = (req, res) => {
-    db.getDbStudents().then((students) => {
-      res.send(students);
-    });
+
+const studentList = async(req, res) => {
+   const students = await Student.find().sort({name:-1})
+   res.status(200).send(students)
+};
+  
+  const newStudent = async(req, res) => {
+    const student = new Student(req.body);
+    try {
+      const result = await student.save();
+      res.status(200).send(result);
+
+    } catch (error) {
+       const errorMsgs = [];
+       for(field in error.errors){
+          errorMsgs.push(error.errors[field].message);
+       }
+       res.status(400).send(errorMsgs);
+    }
   };
   
-  const newStudent = (req, res) => {
-    const student = req.body;
-    console.log(student);
-    db.getDbStudents().then((students) => {
-      students.push(student);
-      db.insertDbStudent(students).then((data) => {
-        res.send(data);
-      });
-    });
+  const studentDetail = async(req, res) => {
+     const id = req.params.id;
+     try {
+       const student = await Student.findById(id);
+       if(!student) res.status(404).send('Not found')
+       res.send(student)
+     } catch (error) {
+       res.status(404).send('Id not found!');
+     }
   };
   
-  const studentDetail = (req, res) => {
-    const id = parseInt(req.params.id);
-    db.getDbStudents().then((students) => {
-      const student = students.find((s) => s.id === id);
-      if (!student) res.status(404).send("No student found with this id");
-      else res.send(student);
-    });
+  const studentUpdate = async(req, res) => {
+     const id = req.params.id;
+     const updatedInfo = req.body;
+     try {
+        const student = await Student.findByIdAndUpdate(id,updatedInfo,{new:true});
+        if(!student) res.status(404).send('Not found')
+        res.send(student)
+      
+     } catch (error) {
+        res.status(404).send('Id not found!');
+     }
   };
   
-  const studentUpdate = (req, res) => {
-    const id = parseInt(req.params.id);
-    const updatedInfo = req.body;
-    db.getDbStudents().then((students) => {
-      const student = students.find((s) => s.id === id);
-      if (!student) res.status(404).send("No student found with this id");
-      else {
-        const i = students.findIndex((s) => s.id === id);
-        console.log("i", i);
-        students[i] = updatedInfo;
-        db.insertDbStudent(students).then((msg) => {
-          res.send(msg);
-        });
-      }
-    });
-  };
-  
-  const studentDelete = (req, res) => {
-    const id = parseInt(req.params.id);
-  
-    db.getDbStudents().then((students) => {
-      const student = students.find((s) => s.id === id);
-      if (!student) res.status(404).send("No student found with this id");
-  
-      const updatedStudents = students.filter((s) => s.id !== id);
-  
-      db.insertDbStudent(updatedStudents).then((msg) => {
-        res.send(student);
-      });
-    });
+  const studentDelete = async(req, res) => {
+    const id = req.params.id;
+     try {
+       const student = await Student.findByIdAndDelete(id);
+       if(!student) res.status(404).send('Not found')
+       res.send(student)
+     
+    } catch (error) {
+       res.status(404).send('Id not found!');
+    }
   };
   
   
