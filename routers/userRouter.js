@@ -1,5 +1,5 @@
 const express = require("express");
-const bcrypt = require('bcrypt');
+const bcrypt = require("bcrypt");
 
 const router = express.Router();
 
@@ -16,13 +16,17 @@ const newUser = async (req, res) => {
   });
 
   const salt = await bcrypt.genSalt(10);
-  user.password = await bcrypt.hash(user.password,salt);
+  user.password = await bcrypt.hash(user.password, salt);
 
   try {
     const result = await user.save();
+    const token = user.generateJWT();
     res.status(200).send({
-        name:result.name,
-        email:result.email
+      token:token,
+      data: {
+        name: result.name,
+        email: result.email,
+      },
     });
   } catch (error) {
     const errorMsgs = [];
@@ -32,7 +36,6 @@ const newUser = async (req, res) => {
     res.status(400).send(errorMsgs);
   }
 };
-
 
 router.route("/").post(newUser);
 

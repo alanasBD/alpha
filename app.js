@@ -1,16 +1,17 @@
 const express = require("express");
 const app = express();
 const studentRouter = require('./routers/studentRouter');
-const mongoose = require('mongoose');
+const morgan = require('morgan');
 const userRouter = require('./routers/userRouter');
 const authRouter = require('./routers/authRouter')
 
 
-mongoose.connect('mongodb://localhost:27017/my-students')
-.then(()=>{
-  console.log('Connected to mongodb');
-})
-.catch(err=>console.log(err))
+if(process.env.NODE_ENV==='production'){
+  console.log('development server');
+  app.use(morgan('dev'))
+}
+
+
 
 app.use(express.json());
 
@@ -31,9 +32,5 @@ app.get("/", (req, res) => {
   res.send("Hello World");
 });
 
-const PORT = 3000;
-app.listen(PORT, () => {
-  console.log("Server is running...");
-});
-
+module.exports = app;
 
